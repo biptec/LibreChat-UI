@@ -38,11 +38,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
-          cache: 'yarn' # or 'npm'
+          node-version: "24.x"
+          cache: yarn
 
       - name: Install dependencies
-        run: yarn install --immutable # or npm ci
+        run: yarn install --frozen-lockfile
+
+      - name: Verify source
+        run: yarn run verify
 
       - name: Configure Environment Variables
         run: |

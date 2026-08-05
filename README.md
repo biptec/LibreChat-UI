@@ -1,118 +1,138 @@
 # LibreChat UI
 
 <div align="center">
-  <img src="build/icon.png" alt="icon" width="200"/>
+  <img src="build/icon.png" alt="LibreChat UI icon" width="200" />
 </div>
 
-## Table of Contents
+LibreChat UI is a desktop wrapper for self-hosted LibreChat instances.
+It provides a dedicated application window and keyboard shortcuts while
+keeping remote LibreChat content isolated from Electron and Node.js APIs.
 
-- [Overview](#overview)
-- [Features](#features)
-- [Installation](#installation)
-  - [macOS](#macos)
-  - [Manually](#manual-installation)
-- [Contributing](#contributing)
-  - [Requirements](#requirements)
-  - [Clone the Repository](#clone-the-repository)
-  - [Install Dependencies](#install-dependencies)
-- [Development](#development)
-  - [Start the Application](#start-the-application)
-  - [Build Directory](#build-directory)
-  - [Create Distribution Package](#create-distribution-package)
-- [Telemetry](#telemetry)
-- [License](#license)
-- [Support](#support)
+## Security model
 
-## Overview
+The application treats every LibreChat server as untrusted remote content:
 
-LibreChat UI is a native desktop application wrapper for self-hosted LibreChat instances, built using Electron. This application provides a convenient way to access your LibreChat instance directly from your desktop.
+- remote servers require HTTPS; HTTP is limited to exact loopback hosts for
+  SSH tunnels;
+- Node.js integration is disabled in every renderer;
+- context isolation, Chromium sandboxing, and web security are enabled;
+- navigation is restricted to the configured LibreChat origin;
+- external HTTPS links open in the system browser;
+- pop-up windows and embedded webviews are blocked;
+- only same-origin microphone access is permitted;
+- camera and all unrelated Electron permissions are denied;
+- packaged builds do not expose Chromium developer tools;
+- no usage telemetry or persistent device identifier is collected.
+
+A compromised LibreChat server can still access data entered into that server.
+Use an instance you trust and keep both the client and server updated.
 
 ## Features
 
-- Native desktop application for LibreChat
-- Keyboard shortcuts
-  - `Cmd/Ctrl+N`: Clicks 'New Chat' button
-  - `Cmd/Ctrl+Shift+S`: Toggle sidebar
-  - `Cmd/Ctrl+Shift+P`: Toggle private chat
-  - `Ctrl+K`: Scroll up
-  - `Ctrl+J`: Scroll down
-  - `Ctrl+U`: Scroll to top
-  - `Ctrl+D`: Scroll to bottom
-- Cross-platform support (for now it's just macOS, but feel free to request more OS support)
-- Easy access to self-hosted or [managed](https://librechat-librechat.hf.space) LibreChat instances
+- Dedicated LibreChat application window
+- Persistent server configuration
+- Microphone support for LibreChat speech-to-text
+- Keyboard shortcuts:
+  - `Cmd/Ctrl+N`: start a new chat
+  - `Cmd/Ctrl+Shift+S`: toggle the sidebar
+  - `Cmd/Ctrl+Shift+P`: toggle temporary chat
+  - `Ctrl+K`: scroll to the previous message
+  - `Ctrl+J`: scroll to the next message
+  - `Ctrl+U`: scroll to the top
+  - `Ctrl+D`: scroll to the bottom
 
-## Installation
+## Requirements
 
-Grab the executable from the [Releases](https://github.com/leikoilja/librechat-ui/releases) page or follow the instructions below to build the application yourself.
+- Node.js 22.12 or newer
+- Yarn 1.22
+- A LibreChat instance available through HTTPS, or through a local SSH tunnel
 
-### macOS
+Public HTTP endpoints, embedded URL credentials, and non-HTTP(S) protocols are
+rejected. HTTP is accepted only for `localhost`, `127.0.0.1`, and `[::1]`, so an
+unencrypted remote endpoint cannot be saved accidentally.
 
-Get the latest version from [releases](https://github.com/leikoilja/LibreChat-UI/releases) page, open the .dmg file and drag the app to your Applications folder.
+## Install a release on macOS
 
-Due to current code signing configurations (or lack thereof) the macOS releases may trigger Gatekeeper warnings ("App is damaged" or "Unidentified developer").
+Releases are currently unsigned. Verify that the release comes from this
+repository before opening it. Prefer building locally when practical.
 
-If you encounter this:
+1. Download the DMG from the repository's Releases page.
+2. Drag `LibreChat UI.app` to `/Applications`.
+3. Open it normally. If macOS blocks the unsigned application, review the
+   warning in **System Settings → Privacy & Security** before choosing to open it.
 
-1.  **Move the app to your Applications folder.** This is important.
-2.  **Open Terminal:** Open the Terminal application on your Mac.
-3.  **Remove Quarantine Attribute:** Run the following command in the Terminal, replacing `/Applications/LibreChat UI.app` with the actual path to the LibreChat UI application if you moved it elsewhere:
+Do not remove the quarantine attribute with `xattr`. That bypasses an important
+macOS safety check instead of letting you review the application once.
 
-    ```bash
-    xattr -d com.apple.quarantine "/Applications/LibreChat UI.app"
-    ```
+After launch, enter the complete HTTPS URL of your LibreChat server, for example:
 
-    *   **Note:** `xattr` is a command-line tool for manipulating extended attributes of files. The `com.apple.quarantine` attribute is added to downloaded files as a security measure by macOS.
-
-4.  **Open the Application:** You should now be able to open the application. You may still see a warning about the developer being unidentified, but you should be able to proceed.
-
-**Why is this necessary?**
-
-Ideally, the application would be properly code-signed to avoid these warnings. However, until code signing is fully configured in the automated build process, this workaround is required.
-
-### Manual Installation
-Please follow instructions in [Contributing](#contributing) to install the dependencies and then [Create Distribution Package](#create-distribution-package) to build the executable locally on your machine.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Requirements
-
-- Node.js (version compatible with Electron 33.x)
-- npm or yarn
-
-#### Clone the Repository
-
-```bash
-git clone https://github.com/leikoilja/librechat-ui.git
-cd librechat-ui
+```text
+https://chat.example.com
 ```
 
-#### Install Dependencies
+### Connect through an SSH tunnel
+
+Forward a local port to the LibreChat port on the server:
 
 ```bash
-yarn install
+ssh -L 3080:127.0.0.1:3080 user@server.example.com
 ```
 
-### Development
+Keep that SSH session open and enter this URL in LibreChat UI:
 
-#### Start the Application
+```text
+http://127.0.0.1:3080
+```
+
+The application permits this HTTP URL because it is loopback-only; traffic
+between your computer and the server is carried inside the encrypted SSH tunnel.
+Direct HTTP URLs using a remote hostname or IP address remain blocked.
+
+## Build locally
+
+```bash
+git clone https://github.com/biptec/LibreChat-UI.git
+cd LibreChat-UI
+yarn install --frozen-lockfile
+yarn run verify
+yarn app:dist:mac
+```
+
+The macOS artifact is created under `dist/`.
+
+## Development
+
+Start the application:
 
 ```bash
 yarn start
 ```
 
-#### Create Distribution Package
+Run syntax checks and tests:
 
 ```bash
-yarn app:dist
+yarn run verify
 ```
 
-## Telemetry
-
-This project is collecting anonymous usage data using [openpanel](https://openpanel.dev) to help improve the application by highlighting what OS the app is launched on as well as the version on the app.
+Create unpacked Linux output for local smoke testing:
 
 ```bash
+yarn app:dir:linux
+```
+
+## Privacy
+
+LibreChat UI does not send analytics or telemetry. It stores only the configured
+LibreChat server URL and standard Chromium session data on the local computer.
+Older releases may have stored a random `computerId`; this version removes that
+legacy value at startup.
+
+## Limitations
+
+External identity-provider redirects are blocked inside the application because
+navigation is restricted to the configured LibreChat origin. External HTTPS
+links open in the default browser. Deploy authentication on the same origin or
+use LibreChat in a regular browser when a cross-origin sign-in flow is required.
 
 ## License
 
@@ -120,4 +140,4 @@ This project is licensed under the MIT License.
 
 ## Support
 
-If you encounter any issues or have questions, please file an issue on the GitHub repository.
+Report problems through the repository's issue tracker.
