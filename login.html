@@ -1,6 +1,11 @@
 <!doctype html>
 <html>
   <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"
+    />
     <title>LibreChat Configuration</title>
     <style>
       :root {
@@ -13,6 +18,7 @@
       }
 
       body {
+        box-sizing: border-box;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
         background-color: var(--background);
@@ -137,6 +143,17 @@
         background-color: var(--primary-hover);
       }
 
+      button:disabled {
+        cursor: wait;
+        opacity: 0.7;
+      }
+
+      .error-message {
+        color: #b42318;
+        font-size: 14px;
+        margin: -12px 0 20px;
+      }
+
       button svg {
         width: 20px;
         height: 20px;
@@ -199,92 +216,51 @@
         URL should point to where you've deployed your LibreChat server.
       </div>
 
-      <div class="form-group">
-        <label for="serverHost">Server URL</label>
-        <div class="input-wrapper">
-          <input
-            type="text"
-            id="serverHost"
-            placeholder="librechat-librechat.hf.space"
-            required
-          />
+      <form id="server-form">
+        <div class="form-group">
+          <label for="serverHost">Server URL</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              id="serverHost"
+              placeholder="https://chat.example.com"
+              required
+            />
+          </div>
         </div>
-      </div>
 
-      <button onclick="submitForm()">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            d="M5 12h14M12 5l7 7-7 7"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-        Connect to Server
-      </button>
+        <p id="error-message" class="error-message" role="alert" hidden></p>
+
+        <button id="connect-button" type="submit">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M5 12h14M12 5l7 7-7 7"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Connect to Server</span>
+        </button>
+      </form>
 
       <div class="tips">
         <h3>📝 Quick Tips</h3>
         <ul>
-          <li>Enter your server domain with or without 'http://' or 'https://'</li>
+          <li>Use HTTPS for remote servers, including remote IP addresses</li>
           <li>
-            Make sure your LibreChat instance is properly configured and running
+            For an SSH tunnel, use <code>http://127.0.0.1:PORT</code> or
+            <code>http://localhost:PORT</code>
           </li>
-          <li>The connection will default to HTTPS for security, unless specified otherwise</li>
+          <li>Plain HTTP connections to remote hosts remain blocked</li>
         </ul>
       </div>
     </div>
 
-    <script>
-      const { ipcRenderer } = require("electron");
-
-      function submitForm() {
-        const serverHost = document.getElementById("serverHost").value;
-        if (serverHost) {
-          ipcRenderer.send("submit-server-host", serverHost);
-        }
-      }
-
-      // Add event listener for Enter key
-      document
-        .getElementById("serverHost")
-        .addEventListener("keypress", function (e) {
-          if (e.key === "Enter") {
-            submitForm();
-          }
-        });
-
-      // Add loading state to button when clicked
-      const connectButton = document.querySelector("button");
-      connectButton.addEventListener("click", function () {
-        this.style.opacity = "0.7";
-        this.innerHTML = `
-                <svg class="spinning" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83" stroke-linecap="round"/>
-                </svg>
-                Connecting...
-            `;
-      });
-
-      // Add spinning animation
-      const style = document.createElement("style");
-      style.textContent = `
-            @keyframes spin {
-                100% { transform: rotate(360deg); }
-            }
-            .spinning {
-                animation: spin 1s linear infinite;
-            }
-        `;
-      document.head.appendChild(style);
-
-      ipcRenderer.on('clear-server-host-input', () => {
-            document.getElementById('serverHost').value = ''; // Clear the input
-        });
-    </script>
+    <script src="./login.js"></script>
   </body>
 </html>
