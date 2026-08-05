@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/biptec/LibreChat-UI/compare/v1.4.0...v1.4.1) (2026-08-05)
+
+
+### 🐞 Fixes
+
+* harden Electron client and remove telemetry ([#1](https://github.com/biptec/LibreChat-UI/issues/1)) ([e856f8e](https://github.com/biptec/LibreChat-UI/commit/e856f8eed6df4eee3df4e4d76ddb7493541b7b1a))
+
 ## [1.4.0](https://github.com/leikoilja/LibreChat-UI/compare/v1.3.0...v1.4.0) (2025-09-20)
 
 
