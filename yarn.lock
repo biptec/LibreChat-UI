@@ -221,14 +221,7 @@
   resolved "https://registry.yarnpkg.com/@types/ms/-/ms-0.7.34.tgz#10964ba0dee6ac4cd462e2795b6bebd407303433"
   integrity sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==
 
-"@types/node@*":
-  version "22.10.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.10.2.tgz#a485426e6d1fdafc7b0d4c7b24e2c78182ddabb9"
-  integrity sha512-Xxr6BBRCAOQixvonOye19wnzyDiUtTeqldOOmj3CkeblonbccA12PFwlufvRdrpjXxqnmUaeiU5EOA+7s5diUQ==
-  dependencies:
-    undici-types "~6.20.0"
-
-"@types/node@^24.9.0":
+"@types/node@*", "@types/node@^24.9.0":
   version "24.13.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-24.13.3.tgz#49f18bd3c647866dcda51a0756c145e14590ce16"
   integrity sha512-Dh8vAsV36ig5wa9OX4pXvMc9D3Veibfw2wix0CUwYODLD8nkj9UsLjASr49nPg+2eKzxhBV+v7L8pXvT4e639Q==
@@ -751,10 +744,10 @@ electron-store@11.0.2:
     conf "^15.0.2"
     type-fest "^5.0.1"
 
-electron@43.3.0:
-  version "43.3.0"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-43.3.0.tgz#8517cbd9402db97e7267cded33c0129fff3bdcb8"
-  integrity sha512-nLlvu0WFjftWsSaTkV2B/c4NDuJBspTyXu8vKSQ6vLvFt8uG3NgN49LLKcXddwX0GqVvAQDhciWp+4xOdTdhew==
+electron@43.5.0:
+  version "43.5.0"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-43.5.0.tgz#910cc3c534268746a240dfc085b59d54414df5a6"
+  integrity sha512-nV2aWuKatmUrxrAWP2pNIynNX7dy83TCAz+6KnsbK7hDVLE+6fa2iouOtir41AboZTa+J5w2UgicWHAqUaaUJw==
   dependencies:
     "@electron-internal/extract-zip" "^1.0.1"
     "@electron/get" "^5.0.0"
@@ -1781,11 +1774,6 @@ uint8array-extras@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/uint8array-extras/-/uint8array-extras-1.5.0.tgz#10d2a85213de3ada304fea1c454f635c73839e86"
   integrity sha512-rvKSBiC5zqCCiDZ9kAOszZcDvdAHwwIKJG33Ykj43OKcWsnmcBRL09YTU4nOeHZ8Y2a7l1MgTd08SBe9A8Qj6A==
-
-undici-types@~6.20.0:
-  version "6.20.0"
-  resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-6.20.0.tgz#8171bf22c1f588d1554d55bf204bc624af388433"
-  integrity sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==
 
 undici-types@~7.18.0:
   version "7.18.2"
